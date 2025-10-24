@@ -1,0 +1,862 @@
+﻿
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { font-family: Calibri, Arial, sans-serif; line-height: 1.6; }
+                        h1 { color: #2c3e50; font-size: 24px; }
+                        h2 { color: #2c3e50; font-size: 20px; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+                        h3 { color: #34495e; font-size: 16px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                        th { background-color: #3498db; color: white; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                        ul, ol { margin: 10px 0; padding-left: 30px; }
+                    </style>
+                </head>
+                <body>
+                    
+        <div class="header">
+            <h1>Requirements Specification Document for mcube Solution</h1>
+            <h1>Daily EBITDA Calculation and Reporting System</h1>
+            <p><strong>For GSMPL (Textile Manufacturing)</strong></p>
+            <p><strong>For TCG Digital</strong></p>
+            <p><strong>Version 1.0</strong></p>
+            <p>TCG Digital Solutions Private Limited</p>
+            <p>INDIA</p>
+        </div>
+
+        <div class="toc">
+            <h2>A. Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Introduction</a>
+                    <ul>
+                        <li><a href="#purpose">1.1 Purpose</a></li>
+                        <li><a href="#audience">1.2 Intended Audience and Reading Suggestions</a></li>
+                        <li><a href="#scope">1.3 Project Scope</a></li>
+                        <li><a href="#exclusions">1.4 Scope Exclusions</a></li>
+                        <li><a href="#success">1.5 Success Criteria</a></li>
+                        <li><a href="#references">1.6 References</a></li>
+                    </ul>
+                </li>
+                <li><a href="#functional">2. Functional Requirements</a></li>
+                <li><a href="#usage">3. Usage Scope</a></li>
+                <li><a href="#nonfunctional">4. Nonfunctional Requirements</a></li>
+                <li><a href="#assumptions">5. Assumptions / Constraints</a></li>
+                <li><a href="#other">6. Other Requirements</a></li>
+                <li><a href="#glossary">7. Appendix A: Glossary</a></li>
+                <li><a href="#appendix-b">8. Appendix B: Assumptions and Dependencies</a></li>
+                <li><a href="#appendix-c">9. Appendix C: Issues List</a></li>
+                <li><a href="#appendix-d">10. Appendix D: Business Risks</a></li>
+            </ul>
+        </div>
+
+        <h2>B. Version History</h2>
+        <table class="version-table">
+            <tbody><tr>
+                <th>Revision</th>
+                <th>Date</th>
+                <th>Created By</th>
+                <th>Approved By</th>
+                <th>Short Description of Changes</th>
+            </tr>
+            <tr>
+                <td>1.0</td>
+                <td>[Date]</td>
+                <td>[Name]</td>
+                <td>[Name]</td>
+                <td>Initial version of approved document</td>
+            </tr>
+        </tbody></table>
+
+        <h2 id="introduction">1. Introduction</h2>
+
+        <h3 id="purpose">1.1 Purpose</h3>
+        <p>This document specifies the requirements for the Daily EBITDA Calculation and Reporting System for GSMPL textile manufacturing operations. The system will provide accurate, real-time margin analysis at SKU level to support management decisions in a multi-SKU manufacturing environment.</p>
+        <p>The application will calculate and track daily EBITDA by integrating data from SAP, TBS (Transaction Booking System), IGMS (Integrated Gate Management System), and manual entries. It will provide transparency, accuracy, and granularity down to SKU level for profitability analysis.</p>
+
+        <h3 id="audience">1.2 Intended Audience and Reading Suggestions</h3>
+        <p>This document is intended for:</p>
+        <ul>
+            <li>Plant managers and operations teams who need daily insight into margins and costs</li>
+            <li>Corporate finance teams monitoring overall profitability</li>
+            <li>Business heads and leadership for decision making</li>
+            <li>Development teams building the solution</li>
+            <li>Quality assurance teams testing the system</li>
+            <li>Project managers coordinating implementation</li>
+        </ul>
+        <p>The document is organized to first present the business context and functional requirements, followed by technical specifications. Business stakeholders should focus on sections 1-3, while technical teams should review all sections.</p>
+
+        <h3 id="scope">1.3 Project Scope</h3>
+        <p>The Daily EBITDA Calculation and Reporting System will:</p>
+        <ul>
+            <li>Calculate and track daily EBITDA at SKU level for Jolwa Plant</li>
+            <li>Integrate data from SAP, TBS, IGMS, and manual entries</li>
+            <li>Support more than 500 SKUs with plant-wise and product-wise breakdown</li>
+            <li>Provide daily, month-to-date, and T-2 (two days lag) management dashboards</li>
+            <li>Enable SKU-wise, product-wise, and plant-wise profitability analysis</li>
+            <li>Support cost forecasting and price optimization during market fluctuations</li>
+            <li>Calculate metrics including Total Sales, Net Sales, Contribution, Margin, and EBITDA</li>
+            <li>Allocate fixed costs, variable costs, sales and distribution expenses across SKUs</li>
+        </ul>
+        <p>The system will be built on the tcgmcube platform and will leverage its business intelligence, data ingestion, and reporting capabilities.</p>
+
+        <h3 id="exclusions">1.4 Scope Exclusions</h3>
+        <p>The following items are explicitly excluded from this release:</p>
+        <ul>
+            <li>Vareili Plant is out of scope for initial release</li>
+            <li>Projected EBITDA feature will be delivered post Go-Live of S&amp;OP module</li>
+            <li>Automated procurement rate updates (will be handled manually until month-end)</li>
+            <li>Real-time inventory valuation (will use weighted average from SAP)</li>
+            <li>Historical data migration beyond current fiscal year</li>
+            <li>Integration with systems other than SAP, TBS, and IGMS</li>
+        </ul>
+
+        <h3 id="success">1.5 Success Criteria</h3>
+        <p>The project will be considered successful when:</p>
+        <ul>
+            <li>Accurate, daily SKU-level EBITDA calculation and reporting is achieved</li>
+            <li>Manual interventions are minimized through direct system integration</li>
+            <li>Response time for dashboard loading is under 5 seconds</li>
+            <li>Effective margin optimization and anomaly detection in cost structures</li>
+            <li>User adoption by plant managers, finance teams, and corporate management</li>
+            <li>95% data accuracy when compared with month-end financial closing</li>
+            <li>System processes data for 500+ SKUs within defined timeframes</li>
+        </ul>
+
+        <h3 id="references">1.6 References</h3>
+        <ul>
+            <li>BA Instruction for AI.docx</li>
+            <li>Daily EBITDA Format.xlsx</li>
+            <li>GSMPL EBITA Understanding Doc 09092025.xlsx</li>
+            <li>SOP_EBIDTA Calculation Sheet 1 1.xlsx</li>
+            <li>Other Inputs.pdf</li>
+            <li>tcgmcube Business Intelligence Manual v5.3</li>
+            <li>SAP Material Master Documentation</li>
+            <li>IGMS System Documentation</li>
+        </ul>
+
+        <h2 id="functional">2. Functional Requirements</h2>
+
+        <h3>2.1 Sales and Net Sales Module</h3>
+        <table class="use-case-table">
+            <tbody><tr>
+                <td>Use Case ID</td>
+                <td>UC-001</td>
+            </tr>
+            <tr>
+                <td>Use Case Name</td>
+                <td>Calculate Sales and Net Sales</td>
+            </tr>
+            <tr>
+                <td>Primary Actor</td>
+                <td>System (Automated)</td>
+            </tr>
+            <tr>
+                <td>Pre-Conditions</td>
+                <td>
+                    <ul>
+                        <li>SAP system is available and accessible</li>
+                        <li>Sales data has been posted in SAP</li>
+                        <li>Invoice-level data is complete</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Basic Process Flow</td>
+                <td>
+                    <ol>
+                        <li>System retrieves sales data from SAP daily</li>
+                        <li>System captures Domestic Sales (quantity and value)</li>
+                        <li>System captures Export Sales (quantity and value)</li>
+                        <li>System captures Waste Sales and Others using waste codes</li>
+                        <li>System adjusts for Sales Returns on actual return date</li>
+                        <li>System fetches Dealer Commission at invoice level</li>
+                        <li>System calculates Price/Rate Differences per SKU</li>
+                        <li>System retrieves Distribution Expenses (Outward Freight, Ocean Freight, Commission, Cash Discount, Rate Discount, Internal Freight, Warehouse Charges)</li>
+                        <li>System calculates Total Sales = (Sales Value Domestic + Sales Value Export) - Sales Returns Value - Dealer Commission ± Price/Rate Differences</li>
+                        <li>System calculates Net Sales = Total Sales - Sales Distribution Expenses</li>
+                        <li>System stores results with date and SKU mapping</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Alternate Flow</td>
+                <td>
+                    <ol>
+                        <li>If SAP data is unavailable</li>
+                        <li>System logs error</li>
+                        <li>System sends notification to administrator</li>
+                        <li>System uses last available data with warning flag</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Acceptance Criteria</td>
+                <td>
+                    <ul>
+                        <li>Sales data is retrieved from SAP daily without manual intervention</li>
+                        <li>All SKUs have sales values mapped correctly</li>
+                        <li>Distribution expenses are allocated to correct SKUs</li>
+                        <li>Net Sales calculation matches formula specification</li>
+                        <li>Data is available for reporting within 2 hours of SAP posting</li>
+                        <li>Drill-down capability available by SKU, product, date, and plant</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody></table>
+
+        <h3>2.2 Melt (PTA &amp; MEG) Module</h3>
+        <table class="use-case-table">
+            <tbody><tr>
+                <td>Use Case ID</td>
+                <td>UC-002</td>
+            </tr>
+            <tr>
+                <td>Use Case Name</td>
+                <td>Calculate Melt Cost and Gross Margin</td>
+            </tr>
+            <tr>
+                <td>Primary Actor</td>
+                <td>System (Automated) / Finance User (Manual Rate Entry)</td>
+            </tr>
+            <tr>
+                <td>Pre-Conditions</td>
+                <td>
+                    <ul>
+                        <li>BOM (Bill of Materials) is configured in system</li>
+                        <li>Daily production plan is available</li>
+                        <li>PTA/MEG rates are entered or available</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Basic Process Flow</td>
+                <td>
+                    <ol>
+                        <li>System retrieves daily production output by SKU</li>
+                        <li>System fetches BOM consumption factor for each SKU</li>
+                        <li>System calculates PTA/MEG consumption = SKU Output × BOM Factor</li>
+                        <li>System uses last manual entry of PTA rate for daily costing</li>
+                        <li>Finance User updates PTA/MEG rates as needed</li>
+                        <li>At month-end, system adjusts with actual procurement rates</li>
+                        <li>System calculates Melt Cost = PTA Consumption × PTA Rate + MEG Consumption × MEG Rate</li>
+                        <li>System includes Other Raw Materials cost and Conversion cost</li>
+                        <li>System calculates Gross Margin = Net Sales - Melt Cost</li>
+                        <li>System stores results with SKU and date mapping</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Alternate Flow</td>
+                <td>
+                    <ol>
+                        <li>If BOM is not configured for a SKU</li>
+                        <li>System flags error</li>
+                        <li>System notifies administrator</li>
+                        <li>User must configure BOM before calculation proceeds</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Acceptance Criteria</td>
+                <td>
+                    <ul>
+                        <li>BOM-based consumption mapping works for all SKUs</li>
+                        <li>Manual rate entry interface is user-friendly</li>
+                        <li>System maintains rate history</li>
+                        <li>Gross Margin calculation is accurate</li>
+                        <li>Month-end adjustment process works correctly</li>
+                        <li>Impact of raw material volatility is tracked</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody></table>
+
+        <h3>2.3 Variable Cost Contribution (VCC) Module</h3>
+        <table class="use-case-table">
+            <tbody><tr>
+                <td>Use Case ID</td>
+                <td>UC-003</td>
+            </tr>
+            <tr>
+                <td>Use Case Name</td>
+                <td>Calculate Variable Costs and Contribution</td>
+            </tr>
+            <tr>
+                <td>Primary Actor</td>
+                <td>System (Automated)</td>
+            </tr>
+            <tr>
+                <td>Pre-Conditions</td>
+                <td>
+                    <ul>
+                        <li>Production data is available</li>
+                        <li>Material master rates are updated in SAP</li>
+                        <li>Plant-wise correction factors are configured</li>
+                        <li>Merge factors are defined</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Basic Process Flow</td>
+                <td>
+                    <ol>
+                        <li>System calculates Power Cost (retrieves plant and production line data, applies rate and quantity norms, multiplies with plant-wise correction factors)</li>
+                        <li>System calculates Heating Cost (applies Merge Factor per SKU, calculates required heating quantity, costs at latest manual rate)</li>
+                        <li>System calculates Antimony, Additives, Chemicals cost (retrieves quantity from BOM/production plans, fetches rates from SAP material master, calculates cost per SKU)</li>
+                        <li>System calculates Packing Material cost (uses BOM and production data, applies rates from material master)</li>
+                        <li>System calculates Procured RM - Chips &amp; Spandex (uses last cost from SAP material master, multiplies by actual usage)</li>
+                        <li>System calculates NRV = Estimated Selling Price - Costs to Produce - Costs to Sell</li>
+                        <li>System calculates Inventory Cost for EBITDA</li>
+                        <li>System allocates Other VCC (uses plant-wise consumable costs, splits using merge factors for SKU-wise allocation)</li>
+                        <li>System calculates Total VCC = Power + Heating + Antimony + Additives + Chemicals + Packing + Procured RM + NRV + Inventory Cost + Other VCC</li>
+                        <li>System calculates Contribution = Gross Margin - Total VCC</li>
+                        <li>System provides audit trails for all variable costs</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Alternate Flow</td>
+                <td>
+                    <ol>
+                        <li>If material master rate is missing</li>
+                        <li>System uses last available rate</li>
+                        <li>System flags for user review</li>
+                        <li>System sends notification</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Acceptance Criteria</td>
+                <td>
+                    <ul>
+                        <li>All VCC components are calculated daily</li>
+                        <li>SKU-level allocation is accurate</li>
+                        <li>Audit trails are maintained</li>
+                        <li>Power calculation uses correct plant factors</li>
+                        <li>BOM mapping works for all materials</li>
+                        <li>Contribution margin is calculated correctly</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody></table>
+
+        <h3>2.4 Fixed Cost Conversion Module</h3>
+        <table class="use-case-table">
+            <tbody><tr>
+                <td>Use Case ID</td>
+                <td>UC-004</td>
+            </tr>
+            <tr>
+                <td>Use Case Name</td>
+                <td>Calculate Fixed Costs and Margin at Jolwa</td>
+            </tr>
+            <tr>
+                <td>Primary Actor</td>
+                <td>System (Automated) / HR/Admin User (Manual Entry)</td>
+            </tr>
+            <tr>
+                <td>Pre-Conditions</td>
+                <td>
+                    <ul>
+                        <li>Merge factors are configured</li>
+                        <li>Production distribution logic is defined</li>
+                        <li>Payroll data is available</li>
+                        <li>Contract manpower data is available from IGMS and SAP</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Basic Process Flow</td>
+                <td>
+                    <ol>
+                        <li>System retrieves Stores &amp; Repairs data from SAP</li>
+                        <li>System retrieves Manpower Payroll (Manual entry) with adjustment for leaves and overtime</li>
+                        <li>System retrieves Contract Manpower from IGMS + SAP</li>
+                        <li>System retrieves Insurance data (Manual entry) using Option 1 (Upfront allocation per planned sales quantity) or Option 2 (Daily spread using recurring monthly journals)</li>
+                        <li>System retrieves Overheads (Manual/historical entry)</li>
+                        <li>System allocates fixed costs to SKUs using merge factors and production distribution logic</li>
+                        <li>System calculates Total Fixed Cost Conversion = Stores &amp; Repairs + Manpower Payroll + Contract Manpower + Insurance + Overheads</li>
+                        <li>System retrieves Internal Shifting Cost of SFG (uses COGM, accounts for opening stock from SAP, maintains weighted average COGS daily)</li>
+                        <li>System calculates Margin at Jolwa = Contribution - Total Fixed Cost Conversion - Internal Shifting Cost of SFG</li>
+                        <li>System provides daily control and transparency</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Alternate Flow</td>
+                <td>
+                    <ol>
+                        <li>If IGMS data is unavailable</li>
+                        <li>System uses SAP contract manpower data only</li>
+                        <li>System sends notification</li>
+                        <li>User must verify and reconcile later</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Acceptance Criteria</td>
+                <td>
+                    <ul>
+                        <li>All fixed cost components are captured</li>
+                        <li>SKU allocation uses correct merge factors</li>
+                        <li>Payroll adjustments work correctly</li>
+                        <li>Insurance allocation follows chosen method</li>
+                        <li>Internal shifting costs are accurate</li>
+                        <li>Margin at Jolwa is calculated correctly</li>
+                        <li>Jolwa plant profitability is trackable</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody></table>
+
+        <h3>2.5 Corporate Expenses Module</h3>
+        <table class="use-case-table">
+            <tbody><tr>
+                <td>Use Case ID</td>
+                <td>UC-005</td>
+            </tr>
+            <tr>
+                <td>Use Case Name</td>
+                <td>Calculate Corporate Expenses and EBITDA</td>
+            </tr>
+            <tr>
+                <td>Primary Actor</td>
+                <td>Finance User</td>
+            </tr>
+            <tr>
+                <td>Pre-Conditions</td>
+                <td>
+                    <ul>
+                        <li>Corporate cost centers are defined</li>
+                        <li>Last month/quarter averages are available</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Basic Process Flow</td>
+                <td>
+                    <ol>
+                        <li>User enters Corporate Payroll expenses</li>
+                        <li>User enters Other Corporate Expenses</li>
+                        <li>User enters Corporate Income</li>
+                        <li>System allocates using last month/quarter averages</li>
+                        <li>System groups under four cost centers</li>
+                        <li>System provides option to bucket as "Others" or dedicated reporting heads</li>
+                        <li>System calculates Total Corporate Expenses = Corporate Expense Payroll + Corporate Expense Others - Corporate Income</li>
+                        <li>System calculates EBITDA = Margin at Jolwa - Total Corporate Expenses</li>
+                        <li>System segregates headquarters costs from operational plant costs</li>
+                        <li>System enables clean plant performance tracking</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Alternate Flow</td>
+                <td>
+                    <ol>
+                        <li>If corporate expense data is not entered</li>
+                        <li>System uses last available data</li>
+                        <li>System flags for user update</li>
+                        <li>System displays warning on reports</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>Acceptance Criteria</td>
+                <td>
+                    <ul>
+                        <li>Corporate expense entry interface is simple</li>
+                        <li>Allocation logic works correctly</li>
+                        <li>EBITDA calculation is accurate</li>
+                        <li>Plant and corporate costs are segregated</li>
+                        <li>Historical comparison is available</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody></table>
+
+        <h3>2.6 Data Ingestion</h3>
+        <h4>Data Sources and Integration:</h4>
+        
+        <p><strong>1. SAP System:</strong></p>
+        <ul>
+            <li>Sales data (domestic, export, waste)</li>
+            <li>Material master rates</li>
+            <li>Stores and repairs</li>
+            <li>Production data</li>
+            <li>COGM and inventory data</li>
+            <li>Contract manpower (partial)</li>
+            <li>Frequency: Daily automated extraction</li>
+        </ul>
+
+        <p><strong>2. TBS (Transaction Booking System):</strong></p>
+        <ul>
+            <li>Transaction-level booking details</li>
+            <li>Frequency: Daily automated extraction</li>
+        </ul>
+
+        <p><strong>3. IGMS (Integrated Gate Management System):</strong></p>
+        <ul>
+            <li>Contract manpower attendance and costs</li>
+            <li>Frequency: Daily automated extraction</li>
+        </ul>
+
+        <p><strong>4. Manual Entries:</strong></p>
+        <ul>
+            <li>PTA/MEG rates</li>
+            <li>Manpower payroll</li>
+            <li>Insurance</li>
+            <li>Overheads</li>
+            <li>Corporate expenses</li>
+            <li>Frequency: As needed / Monthly</li>
+        </ul>
+
+        <h4>Data Ingestion Requirements:</h4>
+        <ul>
+            <li>System must validate data quality before processing</li>
+            <li>System must log all data extraction activities</li>
+            <li>System must handle missing or incomplete data gracefully</li>
+            <li>System must maintain data lineage and audit trail</li>
+            <li>System must process data within 2 hours of availability</li>
+            <li>System must provide data ingestion status dashboard</li>
+        </ul>
+
+        <h2 id="usage">3. Usage Scope</h2>
+        <h3>User Roles and Permissions:</h3>
+
+        <h4>Plant Manager:</h4>
+        <ul>
+            <li>View daily EBITDA reports for Jolwa Plant</li>
+            <li>View SKU-level profitability analysis</li>
+            <li>View cost breakdown by category</li>
+            <li>View trend analysis and comparisons</li>
+            <li>Export reports to Excel/PDF</li>
+        </ul>
+
+        <h4>Finance User:</h4>
+        <ul>
+            <li>All Plant Manager permissions</li>
+            <li>Enter manual rates (PTA, MEG, Payroll, Insurance, Overheads, Corporate)</li>
+            <li>Adjust cost allocations</li>
+            <li>Perform month-end reconciliation</li>
+            <li>View audit trails</li>
+            <li>Access historical data</li>
+        </ul>
+
+        <h4>Corporate Management:</h4>
+        <ul>
+            <li>View consolidated EBITDA across all in-scope plants</li>
+            <li>View executive dashboard with KPIs</li>
+            <li>View margin trends and analysis</li>
+            <li>View cost optimization opportunities</li>
+            <li>Access comparative reports</li>
+        </ul>
+
+        <h4>System Administrator:</h4>
+        <ul>
+            <li>Configure BOM and merge factors</li>
+            <li>Configure cost center mappings</li>
+            <li>Manage user access and permissions</li>
+            <li>Monitor system health and data quality</li>
+            <li>View system logs and error reports</li>
+        </ul>
+
+        <h2 id="nonfunctional">4. Nonfunctional Requirements</h2>
+
+        <h3>4.1 Performance Requirements</h3>
+        <ul>
+            <li>Dashboard loading time: Less than 5 seconds</li>
+            <li>Data processing for 500+ SKUs: Complete within 2 hours of data availability</li>
+            <li>Daily calculation completion: Before 10 AM for previous day data</li>
+            <li>Concurrent users: Support minimum 50 concurrent users</li>
+            <li>Report generation: Less than 10 seconds for standard reports</li>
+            <li>Data export: Less than 30 seconds for Excel/PDF export</li>
+            <li>System availability: 99.5% uptime during business hours</li>
+            <li>Database query response: Less than 3 seconds for complex queries</li>
+        </ul>
+
+        <h3>4.2 Supportability Requirements</h3>
+        
+        <h4>Coding Standards:</h4>
+        <ul>
+            <li>Follow tcgmcube development guidelines</li>
+            <li>Use consistent naming conventions</li>
+            <li>Maintain code documentation</li>
+            <li>Follow modular design principles</li>
+        </ul>
+
+        <h4>Maintenance Access:</h4>
+        <ul>
+            <li>Provide administrator interface for configuration changes</li>
+            <li>Enable remote troubleshooting capabilities</li>
+            <li>Maintain detailed system logs</li>
+            <li>Provide data backup and recovery mechanisms</li>
+        </ul>
+
+        <h4>User Support:</h4>
+        <ul>
+            <li>Provide user manual and training documentation</li>
+            <li>Include in-app help and tooltips</li>
+            <li>Provide error messages in simple language</li>
+            <li>Enable user feedback mechanism</li>
+        </ul>
+
+        <h2 id="assumptions">5. Assumptions / Constraints</h2>
+
+        <h3>Assumptions:</h3>
+        <ul>
+            <li>SAP system will be available daily for data extraction</li>
+            <li>TBS and IGMS systems will provide accurate data</li>
+            <li>Users will enter manual data in a timely manner</li>
+            <li>BOM data is maintained accurately in the system</li>
+            <li>Network connectivity between systems is stable</li>
+            <li>Users have basic understanding of EBITDA concepts</li>
+            <li>Month-end closing will be completed by finance team</li>
+        </ul>
+
+        <h3>Constraints:</h3>
+        <ul>
+            <li>Initial scope limited to Jolwa Plant only</li>
+            <li>Projected EBITDA feature depends on S&amp;OP module Go-Live</li>
+            <li>Manual rate entry required until automated procurement integration</li>
+            <li>Limited to 500+ SKUs in initial release</li>
+            <li>Historical data limited to current fiscal year</li>
+            <li>No real-time inventory valuation in first release</li>
+            <li>Reporting with T-2 (two days lag) for management dashboards</li>
+        </ul>
+
+        <h2 id="other">6. Other Requirements</h2>
+
+        <h3>Security Requirements:</h3>
+        <ul>
+            <li>Role-based access control for all users</li>
+            <li>Audit trail for all data changes</li>
+            <li>Secure data transmission between systems</li>
+            <li>Data encryption at rest and in transit</li>
+            <li>Session timeout after 30 minutes of inactivity</li>
+            <li>Password policy enforcement</li>
+        </ul>
+
+        <h3>Compliance Requirements:</h3>
+        <ul>
+            <li>Comply with financial reporting standards</li>
+            <li>Maintain data retention as per company policy</li>
+            <li>Support audit requirements</li>
+            <li>Follow data privacy regulations</li>
+        </ul>
+
+        <h3>Training Requirements:</h3>
+        <ul>
+            <li>Provide user training for all roles</li>
+            <li>Create training videos and documentation</li>
+            <li>Conduct hands-on workshops</li>
+            <li>Provide quick reference guides</li>
+        </ul>
+
+        <h2 id="glossary">7. Appendix A: Glossary</h2>
+        <table>
+            <tbody><tr>
+                <th>Abbreviation</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>BOM</td>
+                <td>Bill of Materials - defines material consumption per SKU</td>
+            </tr>
+            <tr>
+                <td>COGM</td>
+                <td>Cost of Goods Manufactured</td>
+            </tr>
+            <tr>
+                <td>COGS</td>
+                <td>Cost of Goods Sold</td>
+            </tr>
+            <tr>
+                <td>EBITDA</td>
+                <td>Earnings Before Interest, Taxes, Depreciation, and Amortization</td>
+            </tr>
+            <tr>
+                <td>IGMS</td>
+                <td>Integrated Gate Management System</td>
+            </tr>
+            <tr>
+                <td>MEG</td>
+                <td>Monoethylene Glycol - raw material</td>
+            </tr>
+            <tr>
+                <td>NRV</td>
+                <td>Net Realizable Value - estimated selling price minus costs</td>
+            </tr>
+            <tr>
+                <td>PTA</td>
+                <td>Purified Terephthalic Acid - raw material</td>
+            </tr>
+            <tr>
+                <td>SAP</td>
+                <td>Systems, Applications, and Products in Data Processing</td>
+            </tr>
+            <tr>
+                <td>SFG</td>
+                <td>Semi-Finished Goods</td>
+            </tr>
+            <tr>
+                <td>SKU</td>
+                <td>Stock Keeping Unit - individual product identifier</td>
+            </tr>
+            <tr>
+                <td>S&amp;OP</td>
+                <td>Sales and Operations Planning</td>
+            </tr>
+            <tr>
+                <td>TBS</td>
+                <td>Transaction Booking System</td>
+            </tr>
+            <tr>
+                <td>T-2</td>
+                <td>Two days lag reporting</td>
+            </tr>
+            <tr>
+                <td>VCC</td>
+                <td>Variable Cost Contribution</td>
+            </tr>
+        </tbody></table>
+
+        <h2 id="appendix-b">8. Appendix B: Assumptions and Dependencies</h2>
+
+        <h3>Dependencies:</h3>
+        <ul>
+            <li>SAP system availability and data accuracy</li>
+            <li>TBS system integration and data flow</li>
+            <li>IGMS system integration for manpower data</li>
+            <li>tcgmcube platform availability</li>
+            <li>Network infrastructure and bandwidth</li>
+            <li>Finance team for manual data entry</li>
+            <li>BOM maintenance by operations team</li>
+            <li>S&amp;OP module for projected EBITDA feature</li>
+        </ul>
+
+        <h3>Third-Party Components:</h3>
+        <ul>
+            <li>tcgmcube platform (v5.3 or higher)</li>
+            <li>SAP ERP system</li>
+            <li>TBS system</li>
+            <li>IGMS system</li>
+            <li>Database server</li>
+            <li>Application server</li>
+            <li>Web server</li>
+        </ul>
+
+        <h2 id="appendix-c">9. Appendix C: Issues List</h2>
+        <table>
+            <tbody><tr>
+                <th>Issue ID</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Owner</th>
+                <th>Target Resolution</th>
+            </tr>
+            <tr>
+                <td>ISS-001</td>
+                <td>Decision needed: How to allocate Common Cost center expenses at SKU/Product Level</td>
+                <td>Open</td>
+                <td>Finance Lead</td>
+                <td>[Date]</td>
+            </tr>
+            <tr>
+                <td>ISS-002</td>
+                <td>Waste Sales SKU mapping needs more granular definition</td>
+                <td>Open</td>
+                <td>Operations Lead</td>
+                <td>[Date]</td>
+            </tr>
+            <tr>
+                <td>ISS-003</td>
+                <td>Insurance allocation method to be finalized (Option 1 or 2)</td>
+                <td>Open</td>
+                <td>Finance Lead</td>
+                <td>[Date]</td>
+            </tr>
+            <tr>
+                <td>ISS-004</td>
+                <td>Corporate expense bucketing strategy needs confirmation</td>
+                <td>Open</td>
+                <td>CFO</td>
+                <td>[Date]</td>
+            </tr>
+        </tbody></table>
+
+        <h2 id="appendix-d">10. Appendix D: Business Risks</h2>
+        <table>
+            <tbody><tr>
+                <th>Risk ID</th>
+                <th>Description</th>
+                <th>Impact</th>
+                <th>Likelihood</th>
+                <th>Mitigation Strategy</th>
+            </tr>
+            <tr>
+                <td>BR-001</td>
+                <td>Inaccurate BOM data leading to wrong cost calculations</td>
+                <td>High</td>
+                <td>Medium</td>
+                <td>Implement BOM validation process and regular audits</td>
+            </tr>
+            <tr>
+                <td>BR-002</td>
+                <td>Delayed manual data entry affecting daily reports</td>
+                <td>Medium</td>
+                <td>High</td>
+                <td>Implement data entry reminders and escalation process</td>
+            </tr>
+            <tr>
+                <td>BR-003</td>
+                <td>SAP system downtime affecting data availability</td>
+                <td>High</td>
+                <td>Low</td>
+                <td>Implement data caching and retry mechanisms</td>
+            </tr>
+            <tr>
+                <td>BR-004</td>
+                <td>User resistance to new system adoption</td>
+                <td>Medium</td>
+                <td>Medium</td>
+                <td>Conduct thorough training and change management</td>
+            </tr>
+            <tr>
+                <td>BR-005</td>
+                <td>Data quality issues from source systems</td>
+                <td>High</td>
+                <td>Medium</td>
+                <td>Implement data validation and quality checks</td>
+            </tr>
+            <tr>
+                <td>BR-006</td>
+                <td>Complex allocation logic causing calculation errors</td>
+                <td>High</td>
+                <td>Medium</td>
+                <td>Implement thorough testing and reconciliation processes</td>
+            </tr>
+            <tr>
+                <td>BR-007</td>
+                <td>Market price fluctuations requiring frequent rate updates</td>
+                <td>Medium</td>
+                <td>High</td>
+                <td>Implement alert mechanism for significant price changes</td>
+            </tr>
+        </tbody></table>
+
+        <div class="footer">
+            <p><strong>TCG Digital Solutions LLC</strong></p>
+            <p>www.tcgdigital.com</p>
+            <p>TCG Digital is the flagship data science and technology solutions company of 'The Chatterjee Group' (TCG), a multi-billion dollar conglomerate. We leverage hyper-contemporary technologies and deep domain expertise to engage enterprises with full-spectrum digital transformation initiatives in operational support systems, enterprise mobility, app development and testing, cloud and microservices, automation, security, Big Data Strategy, AI/ML, and advanced analytics.</p>
+            <p>In addition to our Digital Transformation practices, by using our end-to-end AI and advanced analytics Platform, tcgmcube, enterprises are extracting highly actionable insights from their invaluable data assets and achieving Velocity to Value. tcgmcube democratizes data science with scalability, performance, and flexibility.</p>
+            <p><strong>www.tcgdigital.com</strong><br>
+            contact@tcgdigital.com<br>
+            +1 (732) 515-7376</p>
+        </div>
+    
+                </body>
+                </html>
+            
