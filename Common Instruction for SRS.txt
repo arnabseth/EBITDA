@@ -1,0 +1,3 @@
+1. For project scope, business goal, communication style, key deliverable, success matrix, target user and other instruction follow "BA Instruction for AI.docx"
+2. For generating SRS use "SRS Template.docx" and include all items as mentioned in the template. Use same formatting like colour, font as available on the template.
+3. For each use case use "Use Case Template.docx". Use case will be on tabular format and must follow the colour scheme to match with "SRS Template.docx"
