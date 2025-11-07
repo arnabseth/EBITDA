@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSMPL Daily EBITDA - Dashboard</title>
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --primary-purple: #5B2C6F;
+            --primary-gold: #D4AF37;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --success-green: #28a745;
+            --danger-red: #dc3545;
+            --warning-yellow: #ffc107;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER ===== */
+        .ex-header {
+            background: linear-gradient(135deg, var(--primary-purple) 0%, #482055 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .ex-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .ex-header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ex-header-subtitle {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .ex-header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* ===== TAB NAVIGATION ===== */
+        .ex-tabs {
+            background: white;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .ex-tabs-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+        }
+
+        .ex-tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .ex-tab:hover {
+            background: rgba(91, 44, 111, 0.05);
+            color: var(--primary-purple);
+        }
+
+        .ex-tab.active {
+            color: var(--primary-purple);
+            border-bottom-color: var(--primary-purple);
+            background: rgba(91, 44, 111, 0.05);
+        }
+
+        .ex-tab-badge {
+            background: var(--danger-red);
+            color: white;
+            border-radius: 12px;
+            padding: 0.15rem 0.5rem;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* ===== TAB CONTENT ===== */
+        .ex-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .ex-tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .ex-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ===== FILTER BAR ===== */
+        .ex-filter-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .ex-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ex-filter-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .ex-input,
+        .ex-select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.875rem;
+            min-width: 150px;
+            transition: border-color 0.3s ease;
+        }
+
+        .ex-input:focus,
+        .ex-select:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(91, 44, 111, 0.1);
+        }
+
+        .ex-btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ex-btn-primary {
+            background: var(--primary-purple);
+            color: white;
+        }
+
+        .ex-btn-primary:hover {
+            background: #482055;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .ex-btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .ex-btn-success:hover {
+            background: #218838;
+        }
+
+        /* ===== TABLE STYLES ===== */
+        .ex-table-wrapper {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .ex-table-header {
+            background: linear-gradient(135deg, var(--primary-purple), #6a3980);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .ex-table-container {
+            overflow-x: auto;
+        }
+
+        .ex-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .ex-table thead {
+            background: var(--bg-light);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .ex-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+            color: var(--text-dark);
+        }
+
+        .ex-table th.ex-th-right {
+            text-align: right;
+        }
+
+        .ex-table th.ex-th-center {
+            text-align: center;
+        }
+
+        .ex-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ex-table tbody tr:hover {
+            background: rgba(91, 44, 111, 0.05);
+        }
+
+        .ex-table tbody tr.highlighted {
+            background: rgba(255, 193, 7, 0.1);
+            font-weight: 600;
+        }
+
+        .ex-table tbody tr.total-row {
+            background: rgba(91, 44, 111, 0.1);
+            font-weight: 700;
+            border-top: 2px solid var(--primary-purple);
+        }
+
+        .ex-td-right {
+            text-align: right;
+        }
+
+        .ex-td-center {
+            text-align: center;
+        }
+
+        .ex-td-clickable {
+            cursor: pointer;
+            color: var(--primary-purple);
+            font-weight: 500;
+        }
+
+        .ex-td-clickable:hover {
+            text-decoration: underline;
+            background: rgba(91, 44, 111, 0.1);
+        }
+
+        /* Clickable value cells */
+        .ex-value-cell {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ex-value-cell:hover {
+            background: rgba(212, 175, 55, 0.2);
+            font-weight: 600;
+            transform: scale(1.05);
+        }
+
+        .negative {
+            color: var(--danger-red);
+            font-weight: 600;
+        }
+
+        .positive {
+            color: var(--success-green);
+        }
+
+        /* ===== MODAL ===== */
+        .ex-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .ex-modal.active {
+            display: flex;
+        }
+
+        .ex-modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 1200px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ex-modal-header {
+            background: linear-gradient(135deg, var(--primary-purple), #6a3980);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ex-modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .ex-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .ex-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ex-modal-body {
+            padding: 1.5rem;
+        }
+
+        /* ===== FORM STYLES ===== */
+        .ex-form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ex-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ex-form-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+        }
+
+        .ex-form-label.required::after {
+            content: " *";
+            color: var(--danger-red);
+        }
+
+        .ex-textarea {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .ex-textarea:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(91, 44, 111, 0.1);
+        }
+
+        .ex-file-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ex-file-upload:hover {
+            border-color: var(--primary-purple);
+            background: rgba(91, 44, 111, 0.05);
+        }
+
+        .ex-file-input {
+            display: none;
+        }
+
+        /* ===== APPROVAL QUEUE ===== */
+        .ex-approval-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .ex-approval-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .ex-approval-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ex-approval-id {
+            font-weight: 700;
+            color: var(--primary-purple);
+            font-size: 1rem;
+        }
+
+        .ex-status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .ex-status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .ex-status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .ex-status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .ex-approval-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .ex-detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .ex-detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .ex-detail-value {
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .ex-approval-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .ex-btn-approve {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .ex-btn-reject {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        /* ===== ALERTS ===== */
+        .ex-alert {
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ex-alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid var(--success-green);
+        }
+
+        .ex-alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid var(--warning-yellow);
+        }
+
+        .ex-alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .ex-container {
+                padding: 1rem;
+            }
+
+            .ex-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ex-tabs-container {
+                overflow-x: auto;
+            }
+
+            .ex-tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .ex-table {
+                font-size: 0.75rem;
+            }
+
+            .ex-table th,
+            .ex-table td {
+                padding: 0.5rem;
+            }
+
+            .ex-form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== LOADING OVERLAY ===== */
+        .ex-loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ex-loading.active {
+            display: flex;
+        }
+
+        .ex-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="ex-header">
+        <div class="ex-header-content">
+            <div>
+                <div class="ex-header-title">
+                    📊 GSMPL Daily EBITDA
+                </div>
+                <div class="ex-header-subtitle">Jolwa Plant - Real-time Margin Analysis</div>
+            </div>
+            <div class="ex-header-actions">
+                <span id="currentDate" style="font-size: 0.875rem;"></span>
+                <button class="ex-btn ex-btn-success" onclick="exportToExcel()">📥 Export</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- TAB NAVIGATION -->
+    <div class="ex-tabs">
+        <div class="ex-tabs-container">
+            <button class="ex-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="ex-tab" onclick="switchTab('manual-entry')">Manual Entry</button>
+            <button class="ex-tab" onclick="switchTab('approve')">
+                Approve
+                <span class="ex-tab-badge" id="pendingCount">3</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="ex-container">
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="ex-tab-content active">
+            <!-- FILTER BAR -->
+            <div class="ex-filter-bar">
+                <div class="ex-filter-group">
+                    <label class="ex-filter-label">Date</label>
+                    <input type="date" id="reportDate" class="ex-input" onchange="loadDataForDate()">
+                </div>
+                <div style="margin-left: auto;">
+                    <button class="ex-btn ex-btn-primary" onclick="loadDataForDate()">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <!-- MAIN EBITDA TABLE -->
+            <div class="ex-table-wrapper">
+                <div class="ex-table-header">
+                    Daily EBITDA - Product Category View (L0)
+                </div>
+                <div class="ex-table-container">
+                    <table class="ex-table" id="l0Table">
+                        <thead>
+                            <tr>
+                                <th>Sr No.</th>
+                                <th>Particulars</th>
+                                <th class="ex-th-center">UOM</th>
+                                <th class="ex-th-right">Chips</th>
+                                <th class="ex-th-right">POY</th>
+                                <th class="ex-th-right">FDY</th>
+                                <th class="ex-th-right">DTY</th>
+                                <th class="ex-th-right">ACY</th>
+                                <th class="ex-th-right">ATY</th>
+                                <th class="ex-th-right">DW</th>
+                                <th class="ex-th-right">SZ</th>
+                                <th class="ex-th-right">Mono</th>
+                                <th class="ex-th-right">Others</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ebitdaTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MANUAL ENTRY TAB -->
+        <div id="manual-entry" class="ex-tab-content">
+            <div class="ex-alert ex-alert-info">
+                ℹ️ Enter manual adjustments for items not available in SAP. All entries require checker approval.
+            </div>
+
+            <div class="ex-table-wrapper">
+                <div class="ex-table-header">Manual Data Entry</div>
+                <div class="ex-modal-body">
+                    <form id="manualEntryForm">
+                        <div class="ex-form-row">
+                            <div class="ex-form-group">
+                                <label class="ex-form-label required">Entry Date</label>
+                                <input type="date" class="ex-input" id="entryDate" required>
+                            </div>
+                            <div class="ex-form-group">
+                                <label class="ex-form-label required">Adjustment Type</label>
+                                <select class="ex-select" id="adjustmentType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="NRV">NRV Adjustment</option>
+                                    <option value="Stock">Stock Adjustment</option>
+                                    <option value="Credit Note">Credit Note</option>
+                                    <option value="Freight">Freight Adjustment</option>
+                                    <option value="Other">Other Adjustment</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="ex-form-row">
+                            <div class="ex-form-group">
+                                <label class="ex-form-label required">Product Category</label>
+                                <select class="ex-select" id="productCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Chips">Chips</option>
+                                    <option value="POY">POY</option>
+                                    <option value="FDY">FDY</option>
+                                    <option value="DTY">DTY</option>
+                                    <option value="ACY">ACY</option>
+                                    <option value="ATY">ATY</option>
+                                    <option value="DW">DW</option>
+                                    <option value="SZ">SZ</option>
+                                    <option value="Mono">Mono</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div class="ex-form-group">
+                                <label class="ex-form-label required">SKU</label>
+                                <input type="text" class="ex-input" id="skuCode" placeholder="Enter SKU Code" required>
+                            </div>
+                        </div>
+
+                        <div class="ex-form-row">
+                            <div class="ex-form-group">
+                                <label class="ex-form-label required">Adjustment Value (Rs.)</label>
+                                <input type="number" class="ex-input" id="adjustmentValue" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="ex-form-group">
+                                <label class="ex-form-label">Quantity (if applicable)</label>
+                                <input type="number" class="ex-input" id="adjustmentQty" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="ex-form-group">
+                            <label class="ex-form-label required">Justification/Reason</label>
+                            <textarea class="ex-textarea" id="justification" placeholder="Enter detailed reason for this adjustment..." required></textarea>
+                        </div>
+
+                        <div class="ex-form-group">
+                            <label class="ex-form-label">Supporting Documents</label>
+                            <div class="ex-file-upload" onclick="document.getElementById('fileInput').click()">
+                                <input type="file" id="fileInput" class="ex-file-input" multiple accept=".pdf,.xlsx,.jpg,.png">
+                                <p>📎 Click to upload files or drag and drop</p>
+                                <small>Supported formats: PDF, Excel, Images</small>
+                            </div>
+                            <div id="fileList" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="button" class="ex-btn ex-btn-primary" onclick="saveDraft()">💾 Save as Draft</button>
+                            <button type="button" class="ex-btn ex-btn-success" onclick="submitForApproval()">✅ Submit for Approval</button>
+                            <button type="button" class="ex-btn" style="background: #6c757d; color: white;" onclick="resetForm()">🔄 Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Entries -->
+            <div class="ex-table-wrapper" style="margin-top: 2rem;">
+                <div class="ex-table-header">My Recent Entries</div>
+                <div class="ex-table-container">
+                    <table class="ex-table">
+                        <thead>
+                            <tr>
+                                <th>Entry ID</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th class="ex-th-right">Value (Rs.)</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentEntriesBody">
+                            <!-- Recent entries will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- APPROVE TAB -->
+        <div id="approve" class="ex-tab-content">
+            <div class="ex-alert ex-alert-warning">
+                ⏰ SLA: All approvals must be completed within 2 hours of submission.
+            </div>
+
+            <div id="approvalQueue">
+                <!-- Approval cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- DRILL DOWN MODAL -->
+    <div id="drillDownModal" class="ex-modal">
+        <div class="ex-modal-content">
+            <div class="ex-modal-header">
+                <div class="ex-modal-title" id="modalTitle">SKU Level Details</div>
+                <button class="ex-modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="ex-modal-body">
+                <div class="ex-table-container">
+                    <table class="ex-table">
+                        <thead>
+                            <tr>
+                                <th>SKU Code</th>
+                                <th>SKU Description</th>
+                                <th class="ex-th-right">Quantity</th>
+                                <th class="ex-th-right">Value</th>
+                                <th class="ex-th-right">Rate/Unit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="skuTableBody">
+                            <!-- SKU data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="ex-loading">
+        <div class="ex-spinner"></div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // ===== DATA STORAGE =====
+        let currentData = {};
+        let approvalItems = [];
+        let recentEntries = [];
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const today = new Date();
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-IN');
+            document.getElementById('reportDate').valueAsDate = today;
+            document.getElementById('entryDate').valueAsDate = today;
+            
+            // Initialize data
+            initializeData();
+            loadDashboardData();
+            loadApprovalQueue();
+            loadRecentEntries();
+        });
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.ex-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.ex-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // ===== DATA INITIALIZATION =====
+        function initializeData() {
+            // Sample data for different dates
+            currentData = {
+                '2025-10-30': generateDailyData(1.0),
+                '2025-10-29': generateDailyData(0.95),
+                '2025-10-28': generateDailyData(1.05),
+            };
+        }
+
+        function generateDailyData(factor) {
+            return {
+                salesQtyDomestic: [125.5, 340.2, 280.8, 195.4, 110.3, 95.6, 75.2, 60.1, 45.8, 32.5].map(v => v * factor),
+                salesValueDomestic: [15.82, 42.85, 35.38, 24.62, 13.90, 12.05, 9.48, 7.57, 5.77, 4.10].map(v => v * factor),
+                salesQtyExport: [45.2, 120.5, 98.3, 67.8, 38.2, 33.1, 26.0, 20.8, 15.9, 11.3].map(v => v * factor),
+                salesValueExport: [5.87, 15.99, 13.18, 9.18, 5.24, 4.49, 3.54, 2.82, 2.16, 1.53].map(v => v * factor),
+                wasteSale: [0.15, 0.35, 0.28, 0.19, 0.11, 0.09, 0.07, 0.06, 0.04, 0.03].map(v => v * factor),
+                outwardFreight: [0.85, 2.25, 1.85, 1.29, 0.73, 0.63, 0.49, 0.40, 0.30, 0.21].map(v => v * factor),
+                oceanFreight: [0.32, 0.88, 0.72, 0.50, 0.28, 0.25, 0.19, 0.15, 0.12, 0.08].map(v => v * factor),
+                commission: [0.28, 0.75, 0.62, 0.43, 0.24, 0.21, 0.16, 0.13, 0.10, 0.07].map(v => v * factor),
+                cashDiscount: [0.18, 0.48, 0.39, 0.27, 0.15, 0.13, 0.10, 0.08, 0.06, 0.04].map(v => v * factor),
+                rateDiscount: [0.22, 0.59, 0.48, 0.34, 0.19, 0.16, 0.13, 0.10, 0.08, 0.06].map(v => v * factor),
+                internalFreight: [0.35, 0.95, 0.78, 0.54, 0.31, 0.27, 0.21, 0.17, 0.13, 0.09].map(v => v * factor),
+                warehouseCharges: [0.12, 0.32, 0.26, 0.18, 0.10, 0.09, 0.07, 0.06, 0.04, 0.03].map(v => v * factor),
+            };
+        }
+
+        // ===== LOAD DASHBOARD DATA =====
+        function loadDashboardData() {
+            const selectedDate = document.getElementById('reportDate').value;
+            const data = currentData[selectedDate] || currentData[Object.keys(currentData)[0]];
+            
+            const tbody = document.getElementById('ebitdaTableBody');
+            tbody.innerHTML = '';
+
+            const products = ['Chips', 'POY', 'FDY', 'DTY', 'ACY', 'ATY', 'DW', 'SZ', 'Mono', 'Others'];
+            
+            // Sales Section
+            addTableRow(tbody, 1, 'Sales Qty Domestic', 'MT', data.salesQtyDomestic, products, false, 'Sales Qty Domestic');
+            addTableRow(tbody, 2, 'Sales Value Domestic', 'Rs.Cr.', data.salesValueDomestic, products, false, 'Sales Value Domestic');
+            addTableRow(tbody, 3, 'Sales Qty Export', 'MT', data.salesQtyExport, products, false, 'Sales Qty Export');
+            addTableRow(tbody, 4, 'Sales Value Export', 'Rs.Cr.', data.salesValueExport, products, false, 'Sales Value Export');
+            addTableRow(tbody, 5, 'Waste Sale/Others', 'Rs.Cr.', data.wasteSale, products, false, 'Waste Sale');
+            
+            // Calculate Total Sales
+            const totalSales = data.salesValueDomestic.map((v, i) => 
+                v + data.salesValueExport[i] + data.wasteSale[i]
+            );
+            addTableRow(tbody, 'A', 'Sales Total Value (2+4+5)', 'Rs.Cr.', totalSales, products, true);
+            
+            // S&D Expenses
+            addTableRow(tbody, 6, 'Outward Freight', 'Rs.Cr.', data.outwardFreight, products, false, 'Outward Freight');
+            addTableRow(tbody, 7, 'Ocean Freight', 'Rs.Cr.', data.oceanFreight, products, false, 'Ocean Freight');
+            addTableRow(tbody, 8, 'Commission', 'Rs.Cr.', data.commission, products, false, 'Commission');
+            addTableRow(tbody, 9, 'Cash Discount', 'Rs.Cr.', data.cashDiscount, products, false, 'Cash Discount');
+            addTableRow(tbody, 10, 'Rate Discount', 'Rs.Cr.', data.rateDiscount, products, false, 'Rate Discount');
+            addTableRow(tbody, 11, 'Internal Freight', 'Rs.Cr.', data.internalFreight, products, false, 'Internal Freight');
+            addTableRow(tbody, 12, 'Warehouse Charges', 'Rs.Cr.', data.warehouseCharges, products, false, 'Warehouse Charges');
+            
+            // Calculate S&D Total
+            const sdTotal = data.outwardFreight.map((v, i) => 
+                v + data.oceanFreight[i] + data.commission[i] + data.cashDiscount[i] + 
+                data.rateDiscount[i] + data.internalFreight[i] + data.warehouseCharges[i]
+            );
+            addTableRow(tbody, 'B', 'S&D Expenses (6+7+8+9+10+11+12)', 'Rs.Cr.', sdTotal, products, true);
+            
+            // Net Sales
+            const netSales = totalSales.map((v, i) => v - sdTotal[i]);
+            addTableRow(tbody, 'C', 'Net Sales (A-B)', 'Rs.Cr.', netSales, products, true);
+            
+            // Raw Material (sample data)
+            const pta = [8.5, 22.5, 18.5, 12.9, 7.3, 6.3, 4.9, 4.0, 3.0, 2.1].map(v => v * (data.salesValueDomestic[0] / 15.82));
+            const meg = [3.2, 8.5, 7.0, 4.9, 2.8, 2.4, 1.9, 1.5, 1.1, 0.8].map(v => v * (data.salesValueDomestic[0] / 15.82));
+            addTableRow(tbody, 13, 'PTA', 'Rs.Cr.', pta, products, false, 'PTA');
+            addTableRow(tbody, 14, 'MEG', 'Rs.Cr.', meg, products, false, 'MEG');
+            
+            const meltCost = pta.map((v, i) => v + meg[i]);
+            addTableRow(tbody, 'D', 'Melt (13+14)', 'Rs.Cr.', meltCost, products, true);
+            
+            // Gross Margin
+            const grossMargin = netSales.map((v, i) => v - meltCost[i]);
+            addTableRow(tbody, 'E', 'Gross Margin/Spread (C-D)', 'Rs.Cr.', grossMargin, products, true);
+            
+            // VCC (sample)
+            const power = [1.2, 3.2, 2.6, 1.8, 1.0, 0.9, 0.7, 0.6, 0.4, 0.3].map(v => v * (data.salesValueDomestic[0] / 15.82));
+            const manpower = [0.8, 2.1, 1.7, 1.2, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2].map(v => v * (data.salesValueDomestic[0] / 15.82));
+            addTableRow(tbody, 15, 'Power', 'Rs.Cr.', power, products, false, 'Power');
+            addTableRow(tbody, 16, 'Manpower', 'Rs.Cr.', manpower, products, false, 'Manpower');
+            
+            const vcc = power.map((v, i) => v + manpower[i]);
+            addTableRow(tbody, 'F', 'Variable Conversion Cost (15+16)', 'Rs.Cr.', vcc, products, true);
+            
+            // Contribution
+            const contribution = grossMargin.map((v, i) => v - vcc[i]);
+            addTableRow(tbody, 'G', 'Contribution (E-F)', 'Rs.Cr.', contribution, products, true);
+            
+            // FCC (sample)
+            const insurance = [0.3, 0.8, 0.7, 0.5, 0.3, 0.2, 0.2, 0.1, 0.1, 0.1].map(v => v * (data.salesValueDomestic[0] / 15.82));
+            const depreciation = [0.5, 1.3, 1.1, 0.8, 0.4, 0.4, 0.3, 0.2, 0.2, 0.1].map(v => v * (data.salesValueDomestic[0] / 15.82));
+            addTableRow(tbody, 17, 'Insurance', 'Rs.Cr.', insurance, products, false, 'Insurance');
+            addTableRow(tbody, 18, 'Depreciation', 'Rs.Cr.', depreciation, products, false, 'Depreciation');
+            
+            const fcc = insurance.map((v, i) => v + depreciation[i]);
+            addTableRow(tbody, 'H', 'Factory Conversion Cost (17+18)', 'Rs.Cr.', fcc, products, true);
+            
+            // Margin
+            const margin = contribution.map((v, i) => v - fcc[i]);
+            addTableRow(tbody, 'I', 'Margin (G-H)', 'Rs.Cr.', margin, products, true);
+            
+            // Corporate Expenses (sample)
+            const corporate = [0.4, 1.1, 0.9, 0.6, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1].map(v => v * (data.salesValueDomestic[0] / 15.82));
+            addTableRow(tbody, 'J', 'Corporate Expenses', 'Rs.Cr.', corporate, products, false, 'Corporate Expenses');
+            
+            // EBITDA
+            const ebitda = margin.map((v, i) => v - corporate[i]);
+            addTableRow(tbody, 'K', 'EBITDA (I-J)', 'Rs.Cr.', ebitda, products, true);
+            
+            // Per Kg Metrics
+            const salesPerKg = data.salesValueDomestic.map((v, i) => 
+                ((v + data.salesValueExport[i]) * 10000000 / ((data.salesQtyDomestic[i] + data.salesQtyExport[i]) * 1000)).toFixed(2)
+            );
+            const contributionPerKg = contribution.map((v, i) => 
+                (v * 10000000 / ((data.salesQtyDomestic[i] + data.salesQtyExport[i]) * 1000)).toFixed(2)
+            );
+            const marginPerKg = margin.map((v, i) => 
+                (v * 10000000 / ((data.salesQtyDomestic[i] + data.salesQtyExport[i]) * 1000)).toFixed(2)
+            );
+            const ebitdaPerKg = ebitda.map((v, i) => 
+                (v * 10000000 / ((data.salesQtyDomestic[i] + data.salesQtyExport[i]) * 1000)).toFixed(2)
+            );
+            
+            addTableRow(tbody, '', 'Sales per kg (C/Sales Qty)', 'Rs/Kg', salesPerKg, products, false);
+            addTableRow(tbody, '', 'Contribution per kg (G/Sales Qty)', 'Rs/Kg', contributionPerKg, products, false);
+            addTableRow(tbody, '', 'Margin per kg (I/Sales Qty)', 'Rs/Kg', marginPerKg, products, false);
+            addTableRow(tbody, '', 'EBITDA per kg (K/Sales Qty)', 'Rs/Kg', ebitdaPerKg, products, false);
+        }
+
+        function addTableRow(tbody, srNo, particular, uom, values, products, isHighlight, drillDownName) {
+            const tr = document.createElement('tr');
+            if (isHighlight) tr.classList.add('highlighted');
+            
+            const srTd = document.createElement('td');
+            srTd.textContent = srNo;
+            tr.appendChild(srTd);
+            
+            const particularTd = document.createElement('td');
+            particularTd.textContent = particular;
+            tr.appendChild(particularTd);
+            
+            const uomTd = document.createElement('td');
+            uomTd.classList.add('ex-td-center');
+            uomTd.textContent = uom;
+            tr.appendChild(uomTd);
+            
+            values.forEach((value, index) => {
+                const td = document.createElement('td');
+                td.classList.add('ex-td-right');
+                
+                // Make value cells clickable if drillDownName is provided
+                if (drillDownName) {
+                    td.classList.add('ex-value-cell');
+                    td.onclick = () => drillDown(products[index], drillDownName);
+                }
+                
+                if (typeof value === 'number') {
+                    td.textContent = value.toFixed(2);
+                    if (value < 0) td.classList.add('negative');
+                } else {
+                    td.textContent = value;
+                }
+                tr.appendChild(td);
+            });
+            
+            tbody.appendChild(tr);
+        }
+
+        // ===== DRILL DOWN FUNCTION =====
+        function drillDown(product, particular) {
+            document.getElementById('modalTitle').textContent = `${product} - ${particular} (SKU Level)`;
+            
+            // Generate sample SKU data
+            const skuData = generateSKUData(product);
+            const tbody = document.getElementById('skuTableBody');
+            tbody.innerHTML = '';
+            
+            skuData.forEach(sku => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${sku.code}</td>
+                    <td>${sku.description}</td>
+                    <td class="ex-td-right">${sku.quantity}</td>
+                    <td class="ex-td-right">${sku.value}</td>
+                    <td class="ex-td-right">${sku.rate}</td>
+                    <td>
+                        <span class="ex-status-badge ${sku.status === 'Active' ? 'ex-status-approved' : 'ex-status-pending'}">
+                            ${sku.status}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('drillDownModal').classList.add('active');
+        }
+
+        function generateSKUData(product) {
+            const skuCount = Math.floor(Math.random() * 8) + 5;
+            const skus = [];
+            
+            for (let i = 1; i <= skuCount; i++) {
+                skus.push({
+                    code: `${product}-SKU-${String(i).padStart(3, '0')}`,
+                    description: `${product} Grade ${String.fromCharCode(64 + i)} - ${Math.floor(Math.random() * 500) + 100}D`,
+                    quantity: (Math.random() * 50 + 10).toFixed(2) + ' MT',
+                    value: (Math.random() * 5 + 1).toFixed(2) + ' Cr',
+                    rate: (Math.random() * 150 + 100).toFixed(2) + ' Rs/Kg',
+                    status: Math.random() > 0.2 ? 'Active' : 'Low Stock'
+                });
+            }
+            
+            return skus;
+        }
+
+        function closeModal() {
+            document.getElementById('drillDownModal').classList.remove('active');
+        }
+
+        // ===== DATE CHANGE HANDLER =====
+        function loadDataForDate() {
+            showLoading();
+            
+            setTimeout(() => {
+                loadDashboardData();
+                hideLoading();
+                showAlert('Data refreshed successfully!', 'success');
+            }, 500);
+        }
+
+        // ===== MANUAL ENTRY FUNCTIONS =====
+        function saveDraft() {
+            if (!validateForm()) return;
+            
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                showAlert('Entry saved as draft successfully!', 'success');
+                addToRecentEntries('Draft');
+            }, 800);
+        }
+
+        function submitForApproval() {
+            if (!validateForm()) return;
+            
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                showAlert('Entry submitted for approval successfully!', 'success');
+                addToRecentEntries('Pending');
+                addToApprovalQueue();
+                updatePendingCount();
+                resetForm();
+            }, 800);
+        }
+
+        function validateForm() {
+            const requiredFields = ['entryDate', 'adjustmentType', 'productCategory', 'skuCode', 'adjustmentValue', 'justification'];
+            
+            for (const field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value) {
+                    showAlert(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field`, 'warning');
+                    element.focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function resetForm() {
+            document.getElementById('manualEntryForm').reset();
+            document.getElementById('fileList').innerHTML = '';
+        }
+
+        function addToRecentEntries(status) {
+            const entry = {
+                id: 'ME-' + Date.now(),
+                date: document.getElementById('entryDate').value,
+                type: document.getElementById('adjustmentType').value,
+                product: document.getElementById('productCategory').value,
+                sku: document.getElementById('skuCode').value,
+                value: document.getElementById('adjustmentValue').value,
+                status: status
+            };
+            
+            recentEntries.unshift(entry);
+            loadRecentEntries();
+        }
+
+        function loadRecentEntries() {
+            const tbody = document.getElementById('recentEntriesBody');
+            tbody.innerHTML = '';
+            
+            recentEntries.slice(0, 10).forEach(entry => {
+                const tr = document.createElement('tr');
+                const statusClass = entry.status === 'Approved' ? 'ex-status-approved' : 
+                                   entry.status === 'Rejected' ? 'ex-status-rejected' : 'ex-status-pending';
+                
+                tr.innerHTML = `
+                    <td>${entry.id}</td>
+                    <td>${new Date(entry.date).toLocaleDateString('en-IN')}</td>
+                    <td>${entry.type}</td>
+                    <td>${entry.product}</td>
+                    <td>${entry.sku}</td>
+                    <td class="ex-td-right">${parseFloat(entry.value).toFixed(2)}</td>
+                    <td><span class="ex-status-badge ${statusClass}">${entry.status}</span></td>
+                    <td>
+                        <button class="ex-btn" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;" onclick="viewEntry('${entry.id}')">
+                            👁️ View
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            if (recentEntries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">No recent entries</td></tr>';
+            }
+        }
+
+        // ===== APPROVAL QUEUE FUNCTIONS =====
+        function addToApprovalQueue() {
+            const item = {
+                id: 'APR-' + Date.now(),
+                entryId: 'ME-' + Date.now(),
+                submittedBy: 'Current User',
+                submittedOn: new Date().toISOString(),
+                date: document.getElementById('entryDate').value,
+                type: document.getElementById('adjustmentType').value,
+                product: document.getElementById('productCategory').value,
+                sku: document.getElementById('skuCode').value,
+                value: document.getElementById('adjustmentValue').value,
+                quantity: document.getElementById('adjustmentQty').value || 'N/A',
+                justification: document.getElementById('justification').value,
+                status: 'Pending'
+            };
+            
+            approvalItems.unshift(item);
+        }
+
+        function loadApprovalQueue() {
+            // Initialize with sample data
+            if (approvalItems.length === 0) {
+                approvalItems = [
+                    {
+                        id: 'APR-001',
+                        entryId: 'ME-2025-001',
+                        submittedBy: 'Rajesh Kumar',
+                        submittedOn: new Date(Date.now() - 3600000).toISOString(),
+                        date: '2025-10-29',
+                        type: 'NRV Adjustment',
+                        product: 'POY',
+                        sku: 'POY-SKU-045',
+                        value: '125000',
+                        quantity: '2.5 MT',
+                        justification: 'Market price adjustment due to quality issues in batch',
+                        status: 'Pending'
+                    },
+                    {
+                        id: 'APR-002',
+                        entryId: 'ME-2025-002',
+                        submittedBy: 'Priya Sharma',
+                        submittedOn: new Date(Date.now() - 7200000).toISOString(),
+                        date: '2025-10-29',
+                        type: 'Freight Adjustment',
+                        product: 'FDY',
+                        sku: 'FDY-SKU-128',
+                        value: '45000',
+                        quantity: 'N/A',
+                        justification: 'Additional freight charges for urgent delivery to customer',
+                        status: 'Pending'
+                    },
+                    {
+                        id: 'APR-003',
+                        entryId: 'ME-2025-003',
+                        submittedBy: 'Amit Patel',
+                        submittedOn: new Date(Date.now() - 10800000).toISOString(),
+                        date: '2025-10-28',
+                        type: 'Credit Note',
+                        product: 'DTY',
+                        sku: 'DTY-SKU-089',
+                        value: '78000',
+                        quantity: '1.2 MT',
+                        justification: 'Credit note issued for defective material returned by customer',
+                        status: 'Pending'
+                    }
+                ];
+            }
+            
+            const container = document.getElementById('approvalQueue');
+            container.innerHTML = '';
+            
+            const pendingItems = approvalItems.filter(item => item.status === 'Pending');
+            
+            if (pendingItems.length === 0) {
+                container.innerHTML = `
+                    <div class="ex-alert ex-alert-success">
+                        ✅ All entries have been processed. No pending approvals at this time.
+                    </div>
+                `;
+                return;
+            }
+            
+            pendingItems.forEach(item => {
+                const submittedTime = new Date(item.submittedOn);
+                const hoursAgo = Math.floor((Date.now() - submittedTime.getTime()) / 3600000);
+                const slaWarning = hoursAgo >= 2;
+                
+                const card = document.createElement('div');
+                card.className = 'ex-approval-card';
+                card.innerHTML = `
+                    <div class="ex-approval-header">
+                        <div>
+                            <span class="ex-approval-id">${item.entryId}</span>
+                            ${slaWarning ? '<span style="color: var(--danger-red); margin-left: 1rem;">⚠️ SLA Exceeded</span>' : ''}
+                        </div>
+                        <span class="ex-status-badge ex-status-pending">${item.status}</span>
+                    </div>
+                    
+                    <div class="ex-approval-details">
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">Submitted By</span>
+                            <span class="ex-detail-value">${item.submittedBy}</span>
+                        </div>
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">Submitted On</span>
+                            <span class="ex-detail-value">${submittedTime.toLocaleString('en-IN')} (${hoursAgo}h ago)</span>
+                        </div>
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">Entry Date</span>
+                            <span class="ex-detail-value">${new Date(item.date).toLocaleDateString('en-IN')}</span>
+                        </div>
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">Adjustment Type</span>
+                            <span class="ex-detail-value">${item.type}</span>
+                        </div>
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">Product Category</span>
+                            <span class="ex-detail-value">${item.product}</span>
+                        </div>
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">SKU</span>
+                            <span class="ex-detail-value">${item.sku}</span>
+                        </div>
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">Quantity</span>
+                            <span class="ex-detail-value">${item.quantity}</span>
+                        </div>
+                        <div class="ex-detail-item">
+                            <span class="ex-detail-label">Value</span>
+                            <span class="ex-detail-value" style="font-weight: 700; color: var(--primary-purple);">₹ ${parseFloat(item.value).toLocaleString('en-IN')}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ex-form-group" style="margin-top: 1rem;">
+                        <span class="ex-detail-label">Justification</span>
+                        <p style="margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-light); border-radius: 4px; font-size: 0.875rem;">
+                            ${item.justification}
+                        </p>
+                    </div>
+                    
+                    <div class="ex-form-group" style="margin-top: 1rem;">
+                        <label class="ex-form-label">Comments (Optional)</label>
+                        <textarea class="ex-textarea" id="comments-${item.id}" placeholder="Add your comments here..."></textarea>
+                    </div>
+                    
+                    <div class="ex-approval-actions">
+                        <button class="ex-btn ex-btn-approve" onclick="approveEntry('${item.id}')">
+                            ✅ Approve
+                        </button>
+                        <button class="ex-btn ex-btn-reject" onclick="rejectEntry('${item.id}')">
+                            ❌ Reject
+                        </button>
+                        <button class="ex-btn" style="background: var(--text-muted); color: white;" onclick="requestModification('${item.id}')">
+                            🔄 Request Modification
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function approveEntry(id) {
+            const comments = document.getElementById(`comments-${id}`).value;
+            
+            if (confirm('Are you sure you want to approve this entry?')) {
+                showLoading();
+                
+                setTimeout(() => {
+                    const item = approvalItems.find(i => i.id === id);
+                    if (item) {
+                        item.status = 'Approved';
+                        item.approvedBy = 'Current Approver';
+                        item.approvedOn = new Date().toISOString();
+                        item.comments = comments;
+                    }
+                    
+                    hideLoading();
+                    showAlert('Entry approved successfully!', 'success');
+                    loadApprovalQueue();
+                    updatePendingCount();
+                }, 800);
+            }
+        }
+
+        function rejectEntry(id) {
+            const comments = document.getElementById(`comments-${id}`).value;
+            
+            if (!comments) {
+                showAlert('Comments are mandatory for rejection', 'warning');
+                document.getElementById(`comments-${id}`).focus();
+                return;
+            }
+            
+            if (confirm('Are you sure you want to reject this entry?')) {
+                showLoading();
+                
+                setTimeout(() => {
+                    const item = approvalItems.find(i => i.id === id);
+                    if (item) {
+                        item.status = 'Rejected';
+                        item.rejectedBy = 'Current Approver';
+                        item.rejectedOn = new Date().toISOString();
+                        item.comments = comments;
+                    }
+                    
+                    hideLoading();
+                    showAlert('Entry rejected successfully!', 'success');
+                    loadApprovalQueue();
+                    updatePendingCount();
+                }, 800);
+            }
+        }
+
+        function requestModification(id) {
+            const comments = document.getElementById(`comments-${id}`).value;
+            
+            if (!comments) {
+                showAlert('Please provide modification details in comments', 'warning');
+                document.getElementById(`comments-${id}`).focus();
+                return;
+            }
+            
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                showAlert('Modification request sent to maker!', 'success');
+            }, 800);
+        }
+
+        function updatePendingCount() {
+            const pendingCount = approvalItems.filter(item => item.status === 'Pending').length;
+            document.getElementById('pendingCount').textContent = pendingCount;
+            
+            if (pendingCount === 0) {
+                document.getElementById('pendingCount').style.display = 'none';
+            } else {
+                document.getElementById('pendingCount').style.display = 'inline';
+            }
+        }
+
+        // ===== FILE UPLOAD HANDLER =====
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            if (this.files.length > 0) {
+                Array.from(this.files).forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.style.padding = '0.5rem';
+                    fileItem.style.background = 'var(--bg-light)';
+                    fileItem.style.borderRadius = '4px';
+                    fileItem.style.marginBottom = '0.5rem';
+                    fileItem.innerHTML = `📎 ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                    fileList.appendChild(fileItem);
+                });
+            }
+        });
+
+        // ===== UTILITY FUNCTIONS =====
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `ex-alert ex-alert-${type}`;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '80px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '3001';
+            alertDiv.style.minWidth = '300px';
+            alertDiv.style.animation = 'slideInRight 0.3s ease';
+            
+            const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            alertDiv.textContent = `${icon} ${message}`;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 3000);
+        }
+
+        function exportToExcel() {
+            showAlert('Exporting to Excel...', 'success');
+            // In a real implementation, this would trigger an actual Excel export
+        }
+
+        function viewEntry(id) {
+            showAlert('Opening entry details...', 'info');
+        }
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', function(e) {
+            // ESC to close modal
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            
+            // Ctrl+R to refresh
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                loadDataForDate();
+            }
+        });
+
+        // ===== CLICK OUTSIDE MODAL TO CLOSE =====
+        document.getElementById('drillDownModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
